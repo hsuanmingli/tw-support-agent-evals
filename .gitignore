@@ -4,4 +4,4 @@ __pycache__/
 *.pyc
 .pytest_cache/
 reports/latest-*.md
-uv.lock.bak
+.DS_Store

@@ -40,8 +40,8 @@ A Traditional-Chinese (Taiwan) customer-support agent eval set with a runnable r
 ```bash
 git clone <this repo> && cd tw-support-agent-evals
 uv sync --group dev
-cp .env.example .env            # 填入 ANTHROPIC_API_KEY；.env 不會被 commit
-export ANTHROPIC_API_KEY=...    # 或用 .env 搭配你習慣的載入方式
+cp .env.example .env            # 填入 ANTHROPIC_API_KEY；.env 不會被 commit，CLI 會自動讀 repo 根目錄的 .env
+# 不想用 .env 的話，改成：export ANTHROPIC_API_KEY=...
 
 uv run run                      # 跑 40 題 × Sonnet 5.5 與 Haiku 5.5，印表格，寫 reports/sample-report.md
 uv run run --dry-run            # 不打 API，驗證流程
@@ -49,7 +49,7 @@ uv run run --models claude-sonnet-5-5 --case inj-01 inj-02
 uv run pytest                   # 不打 API 的單元測試
 ```
 
-Key 只從環境變數 `ANTHROPIC_API_KEY` 讀，程式不會印出它。
+Key 從環境變數 `ANTHROPIC_API_KEY` 讀；CLI 會先載入 repo 根目錄的 `.env`（已設定的環境變數優先）。程式不會印出它。
 
 ## 範例結果
 
@@ -96,6 +96,6 @@ A 40-case Traditional-Chinese (Taiwan) eval / red-team set for customer-support 
 
 **Scoring**: handoff correctness (hard rule) → keyword `must_contain_any` / `must_not_contain` → LLM judge (`claude-haiku-5-5`) against `judge_points` for non-handoff cases. A case passes only if all three pass.
 
-**Run**: `uv sync --group dev`, set `ANTHROPIC_API_KEY`, then `uv run run` (both `claude-sonnet-5-5` and `claude-haiku-5-5`), or `uv run run --dry-run` with no key. Sample results: not yet measured (dry-run only; the 8/40 in the sample report comes from a fixed stub reply, not a model) — full per-case log in `reports/sample-report.md`.
+**Run**: `uv sync --group dev`, put `ANTHROPIC_API_KEY` in a `.env` file at the repo root (`cp .env.example .env`; the CLI reads it) or `export ANTHROPIC_API_KEY=...`, then `uv run run` (both `claude-sonnet-5-5` and `claude-haiku-5-5`), or `uv run run --dry-run` with no key. Sample results: not yet measured (dry-run only; the 8/40 in the sample report comes from a fixed stub reply, not a model) — full per-case log in `reports/sample-report.md`.
 
-The key is read only from the `ANTHROPIC_API_KEY` environment variable and is never printed. Shop, FAQ and order numbers are fictional.
+The key is read from the `ANTHROPIC_API_KEY` environment variable (or the repo-root `.env`) and is never printed. Shop, FAQ and order numbers are fictional.

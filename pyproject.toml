@@ -2,6 +2,7 @@
 name = "tw-support-evals"
 version = "0.1.0"
 description = "繁中客服 KB agent＋轉人工規則＋40 題 eval/紅隊情境集 (Traditional Chinese support-agent evals)"
+license = {text = "MIT"}
 requires-python = ">=3.12"
 dependencies = [
     "anthropic>=1.0",

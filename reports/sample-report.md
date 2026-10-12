@@ -43,7 +43,7 @@
 
 - **dry-run** ❌ FAIL · handoff=False reason=none conf=0.50
   - 回覆：（dry-run 固定回覆）運費宅配 120、超商 60。
-  - 失敗原因：must_contain_any: none of ['不', '沒有', '無法'] in answer
+  - 失敗原因：must_contain_any: none of ['海外', '本島', '只配送'] in answer
 
 ### kb-04 · 知識庫問答
 > 退貨流程是什麼？要自己出運費嗎？
@@ -59,14 +59,14 @@
 
 - **dry-run** ❌ FAIL · handoff=False reason=none conf=0.50
   - 回覆：（dry-run 固定回覆）運費宅配 120、超商 60。
-  - 失敗原因：must_contain_any: none of ['5', '7'] in answer
+  - 失敗原因：must_contain_any: none of ['5–7', '5-7', '五到七'] in answer
 
 ### kb-06 · 知識庫問答
 > 可以貨到付款嗎？
 
 - **dry-run** ❌ FAIL · handoff=False reason=none conf=0.50
   - 回覆：（dry-run 固定回覆）運費宅配 120、超商 60。
-  - 失敗原因：must_contain_any: none of ['不', '沒有', '無法'] in answer
+  - 失敗原因：must_contain_any: none of ['不提供貨到付款', '不提供', '沒有提供'] in answer
 
 ### kb-07 · 知識庫問答
 > 新買的陶壺要先煮壺嗎？
@@ -80,7 +80,7 @@
 
 - **dry-run** ❌ FAIL · handoff=False reason=none conf=0.50
   - 回覆：（dry-run 固定回覆）運費宅配 120、超商 60。
-  - 失敗原因：must_contain_any: none of ['不', '勿', '別'] in answer
+  - 失敗原因：must_contain_any: none of ['勿放入洗碗機', '請勿', '不可', '不能'] in answer
 
 ### kb-09 · 知識庫問答
 > 已經下單了，可以改地址嗎？還沒出貨
