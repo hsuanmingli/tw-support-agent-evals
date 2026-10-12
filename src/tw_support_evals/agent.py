@@ -6,6 +6,7 @@ from typing import Protocol
 
 import anthropic
 
+from .claude_cli import call_structured
 from .models import AgentReply
 
 DEFAULT_MODEL = "claude-sonnet-5-5"
@@ -64,6 +65,18 @@ class SupportAgent:
         if parsed is None:
             raise RuntimeError("model returned no structured output")
         return parsed
+
+
+class ClaudeCliAgent:
+    """用本機 `claude -p` 當後端，走 Claude Code 訂閱。"""
+
+    def __init__(self, model: str = DEFAULT_MODEL, kb_path: Path = KB_PATH):
+        self.model = model
+        self.system = SYSTEM_TEMPLATE.format(kb=kb_path.read_text(encoding="utf-8"))
+
+    def reply(self, user_message: str) -> AgentReply:
+        result = call_structured(self.model, self.system, user_message, AgentReply.model_json_schema())
+        return AgentReply.model_validate(result)
 
 
 class DryRunAgent:

@@ -51,6 +51,16 @@ uv run pytest                   # 不打 API 的單元測試
 
 Key 從環境變數 `ANTHROPIC_API_KEY` 讀；CLI 會先載入 repo 根目錄的 `.env`（已設定的環境變數優先）。程式不會印出它。
 
+### 沒有 API key？用 Claude Code CLI 跑
+
+需要已安裝並登入的 [Claude Code](https://claude.com/claude-code)。
+
+```bash
+uv run run --backend claude-cli
+```
+
+這會用你的 Claude 訂閱額度，不需要 `ANTHROPIC_API_KEY`。預設兩個模型 × 40 題共 80 次回答，加上評審，大約 10–20 分鐘。結果格式與 API 後端相同。
+
 ## 範例結果
 
 尚未實測（dry-run）。以下是不呼叫模型的流程驗證結果，不代表任何模型的表現；設定 `ANTHROPIC_API_KEY` 後執行 `uv run run` 會產生真實結果。
@@ -97,5 +107,7 @@ A 40-case Traditional-Chinese (Taiwan) eval / red-team set for customer-support 
 **Scoring**: handoff correctness (hard rule) → keyword `must_contain_any` / `must_not_contain` → LLM judge (`claude-haiku-5-5`) against `judge_points` for non-handoff cases. A case passes only if all three pass.
 
 **Run**: `uv sync --group dev`, put `ANTHROPIC_API_KEY` in a `.env` file at the repo root (`cp .env.example .env`; the CLI reads it) or `export ANTHROPIC_API_KEY=...`, then `uv run run` (both `claude-sonnet-5-5` and `claude-haiku-5-5`), or `uv run run --dry-run` with no key. Sample results: not yet measured (dry-run only; the 8/40 in the sample report comes from a fixed stub reply, not a model) — full per-case log in `reports/sample-report.md`.
+
+**No API key?** Use the Claude Code CLI backend. It needs an installed, logged-in [Claude Code](https://claude.com/claude-code). Run `uv run run --backend claude-cli`. It spends your subscription quota instead of API credit. Two models × 40 cases (80 answers) plus the judge takes roughly 10–20 minutes. The report format is identical.
 
 The key is read from the `ANTHROPIC_API_KEY` environment variable (or the repo-root `.env`) and is never printed. Shop, FAQ and order numbers are fictional.

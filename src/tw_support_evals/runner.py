@@ -102,12 +102,16 @@ def render_table(results: dict[str, list[CaseResult]], cases: list[Case]) -> str
     return "\n".join(lines)
 
 
-def render_report(results: dict[str, list[CaseResult]], cases: list[Case]) -> str:
+def render_report(results: dict[str, list[CaseResult]], cases: list[Case], backend: str = "api") -> str:
     models = list(results)
     index = {m: {r.case_id: r for r in rs} for m, rs in results.items()}
     out = [f"# 評測報告 Eval Report — {date.today().isoformat()}", ""]
     if any(m == "dry-run" or any(r.model == "dry-run" for r in rs) for m, rs in results.items()):
         out += ["> ⚠️ 這份是 `--dry-run` 產出，沒有真的呼叫模型。設定 `ANTHROPIC_API_KEY` 後執行 `uv run run` 會覆寫成真實結果。", ""]
+    if backend == "claude-cli":
+        out += ["後端：Claude Code CLI（claude -p，使用者訂閱額度）", ""]
+    elif backend == "api":
+        out += ["後端：Anthropic API", ""]
     out += [f"模型 Models: {', '.join(models)}　｜　題數 Cases: {len(cases)}", ""]
 
     out += ["## 總分 Totals", "", "| model | passed | total | rate |", "|---|---|---|---|"]
