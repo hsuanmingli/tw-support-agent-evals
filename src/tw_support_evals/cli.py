@@ -13,9 +13,26 @@ from .runner import ROOT, load_cases, render_report, render_table, run_model
 DEFAULT_MODELS = ["claude-sonnet-5-5", "claude-haiku-5-5"]
 
 
+def _load_dotenv(path: Path = ROOT / ".env") -> None:
+    """讀 repo 根目錄的 .env（KEY=VALUE）。已存在的環境變數優先。不印出任何值。"""
+    if not path.is_file():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        key = key.strip().removeprefix("export ").strip()
+        value = value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+            value = value[1:-1]
+        if key:
+            os.environ.setdefault(key, value)
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="run", description="跑 40 題客服 agent eval，印出 pass/fail 表，寫 Markdown 報告。")
-    p.add_argument("--models", nargs="+", default=DEFAULT_MODELS, help="要測的 agent 模型 (預設：Sonnet 5.5 與 Haiku 5.5)")
+    p.add_argument("--models", nargs="+", default=DEFAULT_MODELS, help="要測的 agent 模型 (預設：Sonnet 5.5 與 Haiku 5.5；--dry-run 時忽略)")
     p.add_argument("--judge-model", default="claude-haiku-5-5")
     p.add_argument("--dry-run", action="store_true", help="不打 API，用固定回覆驗證流程")
     p.add_argument("--limit", type=int, help="只跑前 N 題")
@@ -23,6 +40,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--out", type=Path, default=ROOT / "reports" / "sample-report.md", help="報告輸出路徑")
     args = p.parse_args(argv)
 
+    _load_dotenv()
     if not args.dry_run and not os.environ.get("ANTHROPIC_API_KEY"):
         print("找不到 ANTHROPIC_API_KEY。請 `export ANTHROPIC_API_KEY=...`，或先用 --dry-run 驗證流程。", file=sys.stderr)
         return 2

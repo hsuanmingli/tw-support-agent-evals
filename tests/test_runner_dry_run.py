@@ -25,3 +25,16 @@ def test_table_and_report_mention_every_case():
         assert c.id in report
     assert "PASS" in table and "FAIL" in table
     assert "## 分類摘要" in report
+
+
+def test_agent_exception_is_recorded_not_raised():
+    class BoomAgent:
+        model = "boom"
+
+        def reply(self, user_message):
+            raise RuntimeError("boom")
+
+    cases = load_cases(limit=3)
+    results = run_model(BoomAgent(), DryRunJudge(), cases)
+    assert len(results) == 3
+    assert all(r.passed is False and r.error for r in results)

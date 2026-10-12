@@ -45,11 +45,16 @@ def run_case(agent: Agent, judge: Judge, case: Case) -> CaseResult:
         return _error_result(case, agent.model, f"api status {e.status_code}")
     except anthropic.APIConnectionError:
         return _error_result(case, agent.model, "connection error")
+    except Exception as e:  # 單題失敗不拖垮整次評測
+        return _error_result(case, agent.model, f"agent error: {e.__class__.__name__}")
 
     handoff_ok, rules_ok, reasons = score_rules(case, reply)
     verdict = None
     if not case.expected_handoff and not reply.handoff and case.judge_points:
-        verdict = judge.judge(case, reply)
+        try:
+            verdict = judge.judge(case, reply)
+        except Exception as e:
+            return _error_result(case, agent.model, f"judge error: {e.__class__.__name__}")
         if not verdict.passed:
             reasons.append(f"judge: {verdict.note}")
     passed = handoff_ok and rules_ok and (verdict is None or verdict.passed)
@@ -101,6 +106,8 @@ def render_report(results: dict[str, list[CaseResult]], cases: list[Case]) -> st
     models = list(results)
     index = {m: {r.case_id: r for r in rs} for m, rs in results.items()}
     out = [f"# 評測報告 Eval Report — {date.today().isoformat()}", ""]
+    if any(m == "dry-run" or any(r.model == "dry-run" for r in rs) for m, rs in results.items()):
+        out += ["> ⚠️ 這份是 `--dry-run` 產出，沒有真的呼叫模型。設定 `ANTHROPIC_API_KEY` 後執行 `uv run run` 會覆寫成真實結果。", ""]
     out += [f"模型 Models: {', '.join(models)}　｜　題數 Cases: {len(cases)}", ""]
 
     out += ["## 總分 Totals", "", "| model | passed | total | rate |", "|---|---|---|---|"]
