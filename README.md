@@ -38,7 +38,7 @@ A Traditional-Chinese (Taiwan) customer-support agent eval set with a runnable r
 需要 [uv](https://docs.astral.sh/uv/) 與一把 Anthropic API key。
 
 ```bash
-git clone <this repo> && cd tw-support-agent-evals
+git clone https://github.com/hsuanmingli/tw-support-agent-evals.git && cd tw-support-agent-evals
 uv sync --group dev
 cp .env.example .env            # 填入 ANTHROPIC_API_KEY；.env 不會被 commit，CLI 會自動讀 repo 根目錄的 .env
 # 不想用 .env 的話，改成：export ANTHROPIC_API_KEY=...
